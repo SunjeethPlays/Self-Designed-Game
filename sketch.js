@@ -1,13 +1,17 @@
-var box;
+var box,boxImg;
 var edges;
 var bullyGang;
 var x=200,y=300;
 var pain = 0;
 var powerPoint1,powerPoint2,powerPoint3,powerPoint4,powerPointImg;
 var power=0;
+var visibility;
+
+var playerState="HARMABLE";
 
 function preload() {
   powerPointImg = loadImage("guava.png");
+  boxImg = loadImage("hexa.png");
 }
 
 function setup() {
@@ -16,7 +20,10 @@ createCanvas(windowWidth,windowHeight);
     edges = createEdgeSprites();
 
     box = createSprite(600,500,20,20);
-    box.shapeColor="lime";
+    box.addImage(boxImg);
+    box.scale = 0.07;
+    visibility=255;
+    //console.log(box.visibility);
 
     powerPoint1=createSprite(windowWidth-100,windowHeight-300);
     powerPoint1.shapeColor="green";
@@ -52,19 +59,6 @@ createCanvas(windowWidth,windowHeight);
       
     }
 
- 
-    
-   /* for(var i=0; i<5;i++){
-      for(var j=0; j<i;j++){
-        bullies(x+j*50,y+j*50);
-
-      }
-
-      y=y+100;
-    }
-
-   */
-
 }
 
 function draw() {
@@ -90,40 +84,60 @@ function draw() {
     if (box.isTouching(powerPoint1)) {
       powerPoint1.destroy();
       power = power+100;
+      visibility=255;
     }
     if (box.isTouching(powerPoint2)) {
       powerPoint2.destroy();
       power = power+100;
+      visibility=255;
     }
     if (box.isTouching(powerPoint3)) {
       powerPoint3.destroy();
       power = power+100;
+      visibility=255;
     }
     if (box.isTouching(powerPoint4)) {
       powerPoint4.destroy();
       power = power+100;
+      visibility=255;
     }
-/*
-    if(box.isTouching(bullyGang)){
+    console.log(visibility);
 
-      var rand = Math.round(random(3,6))
-      bullyGang.setVelocityXEach(rand);
-
-
+    if (keyDown("space")) {
+      power -= 10;
+      playerState = "NONHARMABLE";
     }
-
- */  
+    if(power>0){
+      gameState="NONHARMABLE";
+    }
+  
       bullyGang.bounceOff(edges[0]);
       bullyGang.bounceOff(edges[1]);
       bullyGang.bounceOff(edges[2]);
       bullyGang.bounceOff(edges[3]); 
 
-      if (box.isTouching(bullyGang)) {
+      if (box.isTouching(bullyGang)&& playerState== "HARMABLE") {
+        push();
         pain += 1;
-        box.velocityY -= 1;
-        box.velocityX -= 1;
+        visibility=visibility-5;
+       // box.tint = rgba(255,255,255,visibility);
+
+       tint(255,visibility)
+        
+        
+        pop();
       }
-console.log(pain);
+
+      if (playerState == "NONHARMABLE") {
+        bullyGang.bounceOff(box);
+      }
+
+      if(visibility <0){
+
+        console.log("GAME OVER!!!")
+
+      }
+//console.log(pain);
 
     drawSprites();
 }
